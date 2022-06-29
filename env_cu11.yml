@@ -1,0 +1,42 @@
+name: tlgan
+channels:
+  - defaults
+  - pytorch
+  - conda-forge
+dependencies:
+  - python=3.9
+  - pip
+  - numpy>=1.20
+  - click>=8.0
+  - pillow=8.3.1
+  - defaults::scipy=1.7.1 # get MKL-version if applicable
+  - scikit-learn=1.0
+  - pytorch::pytorch=1.10
+  - conda-forge::cudatoolkit=11.3
+  - pytorch::torchvision=0.11.1 # 0.11.1=py39_cu113 _NOT_ built with nvjpeg
+  - requests=2.26.0
+  - tqdm=4.62.2
+  - ninja=1.10.2
+  - matplotlib=3.4.2
+  - imageio=2.9.0
+  - psutil
+  - packaging
+  - cachetools
+  - timm
+  - pip:
+    - imgui[glfw]==1.4.1
+    - glfw==2.2.0
+    - pyopengl==3.1.5
+    - imageio-ffmpeg==0.4.3
+    - opencv_python==4.4.*
+    - pyspng
+    - figuregen
+    - mutagen # mp4 metadata
+    - kornia==0.5
+    - sewar
+    - piexif
+    - einops # for LoFTR
+    - yacs # for LoFTR
+    #- bin/cu111/pycuda-2020.1-cp38-cp38-win_amd64.whl
+
+# conda env update -f env_cu11.yml --prune
