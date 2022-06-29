@@ -11,7 +11,7 @@ import numpy as np
 import argparse
 from PIL import Image
 from os import makedirs
-from tqdm import trange
+from tqdm import tqdm
 from pathlib import Path
 import json
 import imgui
@@ -185,10 +185,10 @@ def get_transformed_frame(v, i):
         pW, pH = [min(dim//2-2, int(c*dim)) for c,dim in zip(v.pad, [W, H])]
         scaled = torch.nn.functional.pad(scaled, [pW, pW, 0, 0]) if pW > 0 else scaled
         scaled = torch.nn.functional.pad(scaled, [0, 0, pH, pH]) if pH > 0 else scaled
-        v.pad_horiz_px = pW
-        v.pad_vert_px = pH
+        v.pad_horizontal = pW
+        v.pad_vertical = pH
     else:
-        v.pad_horiz_px = v.pad_vert_px = 0
+        v.pad_horizontal = v.pad_vertical = 0
 
     return scaled
 
@@ -252,8 +252,8 @@ class State(StrictDataclass):
     transl: List[int] = field([0, 0])
     crop: List[int] = field([0, 0])
     pad: List[int] = field([0, 0])
-    pad_horiz_px: int = 0 # for adding __exactly__ right amount to GAN output layer
-    pad_vert_px: int = 0
+    pad_horizontal: int = 0 # for adding __exactly__ right amount to GAN output layer
+    pad_vertical: int = 0
     crop_even: bool = True
     ignore_manual: str = '' # manually ignore ranges of frames
     zoom: float = 1.0
@@ -299,6 +299,7 @@ class VideoPreproc(ToolbarViewer):
         from dataclasses import asdict
         
         state = asdict(self.state)
+        state['args']['state'] = None # don't auto-load state json
         del state['cond'] # re-parsed in init()
         del state['export']
         
@@ -312,12 +313,13 @@ class VideoPreproc(ToolbarViewer):
         state_dict = { k: v for k,v in in_dict.items() if k not in ignores }
         
         # Check that input sequence exists
-        pth = state_dict['args'].get('path')
-        if pth and Path(pth).exists():
-            vid = VideoFrames(pth)
-        else:
-            print(f'Input sequence not found: {pth}')
-            del state_dict['vid_path']
+        if 'path' in state_dict['args']:
+            pth = Path(state_dict['args']['path'])
+            if not pth.exists():
+                print(f'Input sequence not found: {pth}')
+                del state_dict['args']['path']
+            elif vid.path != pth:
+                vid = VideoFrames(pth)
 
         # Manal state
         for k, v in state_dict['manal'].items():
@@ -337,7 +339,6 @@ class VideoPreproc(ToolbarViewer):
 
         self.state.args = EasyDict(self.state.args)
         self.state.vid = vid
-        self.state.vid.nvjpeg = True
         self.state.idx_e = vid.n_frames - 1
         self.state.img_idx = self.state.idx_s
         self.state.img_idx_shifted = self.state.idx_s
@@ -356,6 +357,13 @@ class VideoPreproc(ToolbarViewer):
         # Export window
         self.export_resume = False
         self.export_restart = False
+
+        # Load initial state if specified
+        init_state_pth = self.state.args.get('state')
+        if init_state_pth:
+            print(f'Loading UI state from {init_state_pth}')
+            self.load_state_from_dict(
+                json.loads(Path(init_state_pth).read_text())['meta'])
 
     def export_frames(self):
         v = self.state
@@ -418,7 +426,7 @@ class VideoPreproc(ToolbarViewer):
         
         write_meta()
 
-        for j in trange(idx_start, len(ids), desc='Exporting frames'):
+        for j in tqdm(range(idx_start, len(ids)), initial=idx_start, total=len(ids), desc='Exporting frames'):
             i = ids[j]
             if not v.export:
                 vid.exceptions = False
@@ -853,10 +861,11 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Video preprocessing')
     parser.add_argument('path', type=str, help='Path to frames (AMOS data or output of get_video_frames.py)')
     parser.add_argument('--labels', type=str, default=None, help='Path to conditioning labels (if not parsable from filenames)')
+    parser.add_argument('--state', type=str, default=None, help='Path to dataset.json containing UI state to load (found in exported dataset zip)')
     args = EasyDict(vars(parser.parse_args()))
 
     # Wrapper for frame collection
-    vid = VideoFrames(args.path, torch=True)
+    vid = VideoFrames(args.path, torch=True, nvjpeg=True)
     
     # Go fast
     torch.autograd.set_grad_enabled(False)
