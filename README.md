@@ -55,8 +55,9 @@ python grid_viz.py /path/to/image.png
 **Dataset visualization**<br>
 Both visualizers can display dataset frames that most closely match the current conditioning variables. Set environment variable `TLGAN_DATASET_ROOT` or pass argument `--dataset_root` to specify the directory in which datasets are stored.
 
-## Pre-trained models
-Pre-trained models are available **[here](https://drive.google.com/drive/folders/1ZA7Gk2OIFI2cANHEHHAm3AdWLMjJCExE?usp=sharing)**.
+## Downloads
+* [Pre-trained models](https://drive.google.com/drive/folders/1ZA7Gk2OIFI2cANHEHHAm3AdWLMjJCExE?usp=sharing)
+* [Supplemental material](../../releases/download/supplemental/tlgan_supplemental.zip) (zip, 303 MB)
 
 ## Known issues
 * NVJPEG does not work correctly with CUDA 11.0 - 11.5 <sup>[1][nvjpeg_bug]</sup>. CPU decoding will be used instead, leading to reduced performance. Affects `preproc/process_sequence.py`, `grid_viz.py`, and `visualize.py`.
