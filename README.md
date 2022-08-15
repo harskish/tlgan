@@ -6,10 +6,10 @@
 > **Disentangling Random and Cyclic Effects in Time-Lapse Sequences**<br>
 > Erik Härkönen<sup>1</sup>, Miika Aittala<sup>2</sup>, Tuomas Kynkäänniemi<sup>1</sup>, Samuli Laine<sup>2</sup>, Timo Aila<sup>2</sup>, Jaakko Lehtinen<sup>1,2</sup><br>
 > <sup>1</sup>Aalto University, <sup>2</sup>NVIDIA<br>
-> https://arxiv.org/abs/2207.01413 <br>
 > https://doi.org/10.1145/3528223.3530170
 >
 > <p align="justify"><b>Abstract: </b><i>Time-lapse image sequences offer visually compelling insights into dynamic processes that are too slow to observe in real time. However, playing a long time-lapse sequence back as a video often results in distracting flicker due to random effects, such as weather, as well as cyclic effects, such as the day-night cycle. We introduce the problem of disentangling time-lapse sequences in a way that allows separate, after-the-fact control of overall trends, cyclic effects, and random effects in the images, and describe a technique based on data-driven generative models that achieves this goal. This enables us to ``re-render'' the sequences in ways that would not be possible with the input images alone. For example, we can stabilize a long sequence to focus on plant growth over many months, under selectable, consistent weather. <br>Our approach is based on Generative Adversarial Networks (GAN) that are conditioned with the time coordinate of the time-lapse sequence. Our architecture and training procedure are designed so that the networks learn to model random variations, such as weather, using the GAN's latent space, and to disentangle overall trends and cyclic variations by feeding the conditioning time label to the model using Fourier features with specific frequencies. <br>We show that our models are robust to defects in the training data, enabling us to amend some of the practical difficulties in capturing long time-lapse sequences, such as temporary occlusions, uneven frame spacing, and missing frames.</i></p>
+> <p align="justify"><b>Video:</b> https://youtu.be/UrQ3tOfpjuA
 
 ## Setup
 See the [setup instructions](docs/SETUP.md).
