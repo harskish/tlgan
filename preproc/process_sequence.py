@@ -63,7 +63,7 @@ def try_parse_filenames(v, idx_s, idx_e):
         except ValueError:
             pass
     
-    return (np.linspace(0, 1, idx_e - idx_s), 1, 0.0)
+    return (np.linspace(0, 1, idx_e - idx_s + 1), 1, 0.0)
 
 # Map conditioning to closest index
 def c_to_idx(v, t):
